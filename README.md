@@ -25,10 +25,14 @@ make help
 
 ### Usage
 
-Here are the notes on how to use the different tools....
+##### ListEC2
+This is used to view useful information about your EC2 instances, such as VPC and subnet location, DNS and IP 
+information, AMI information, and all inbound and outbound network port access.  
+
+Run the following command to get a list of commandline arguments:
 
 ```
-Example of how to run a command
+./ListEC2
 ```
 
 ### Want to contribute?

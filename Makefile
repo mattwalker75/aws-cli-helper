@@ -24,10 +24,10 @@ clean:
 	@-rm $(GOBIN)/$(PROJECTNAME) 2> /dev/null
 	@-$(MAKE) go-clean
 
-## install: Install missing dependencies needed by your programs. 
-install: go-get
+## dep_install: Install missing dependencies needed by your programs. 
+dep_install: go-get
 
-## compile: Runs "install" and then compiles the programs and put them in the bin directory
+## compile: Runs "dep_install" and then compiles the programs and put them in the bin directory
 compile: go-compile
 
 go-compile: go-get go-build
