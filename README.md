@@ -36,6 +36,16 @@ Run the following command to get a list of commandline arguments:
 ./ListEC2
 ```
 
+#### ListENIs
+This is used to view useful information about Elastic Network Interfaces (ENI's), such as private and public
+DNS names and IP Addresses, description of the ENI, VPC and subnet location, and the type of interface.
+
+Run the following command to get a list of commandline arguments:
+
+```
+./ListENIs
+```
+
 ### Want to contribute?
 
 After you added your code updates, compiling it, and testing it, you can run the following command
