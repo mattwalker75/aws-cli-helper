@@ -25,7 +25,7 @@ make help
 
 ### Usage
 
-##### ListEC2
+#### ListEC2
 This is used to view useful information about your EC2 instances, such as VPC and subnet location, DNS and IP 
 information, AMI information, and all inbound and outbound network port access.  
 
