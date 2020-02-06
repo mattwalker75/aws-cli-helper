@@ -13,6 +13,14 @@ LDFLAGS=-ldflags "-s -w -X=main.Build=$(BUILD)"
 # Make is verbose in Linux. Make it silent.
 MAKEFLAGS += --silent
 
+# This "install" option gets ran by default if no parameters are passed to the "make" command because it is the first one
+# in the list.
+## install: Runs "dep_install" and then compiles the programs and put them in the bin directory
+install: go-compile
+
+## dep_install: Install missing dependencies needed by your programs. 
+dep_install: go-get
+
 ## reset: Delete all directories and files not part of the repo.  Perform a reset on the repo for commits
 reset:
 	@-$(MAKE) go-clean
@@ -26,19 +34,15 @@ clean:
 	@-rm $(GOBIN)/$(PROJECTNAME) 2> /dev/null
 	@-$(MAKE) go-clean
 
-## dep_install: Install missing dependencies needed by your programs. 
-dep_install: go-get
-
-## install: Runs "dep_install" and then compiles the programs and put them in the bin directory
-install: go-compile
-
 go-compile: go-get go-build
 
 go-build:
 	@echo "  >  Building binaries..."
 	@GOPATH=$(GOPATH) GOBIN=$(GOBIN) go build $(LDFLAGS) -o $(GOBIN)/ListEC2 ListEC2.go
+	@GOPATH=$(GOPATH) GOBIN=$(GOBIN) go build $(LDFLAGS) -o $(GOBIN)/ListENIs ListENIs.go
 	@echo " Files:"
 	@echo "   - $(GOBIN)/ListEC2"
+	@echo "   - $(GOBIN)/ListENIs"
 	@echo ""
 
 go-get:

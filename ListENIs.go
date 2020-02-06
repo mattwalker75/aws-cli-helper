@@ -15,11 +15,12 @@ var ec2svc *ec2.EC2
 
 //  Print out usage if invalid parms are passed to the command
 func usage() {
-	fmt.Println("Description:  View information about the EC2 instances in your account.")
+	fmt.Println("Description:  View information about the Elastic Network Interfaces (ENI's) in your account.")
 	fmt.Println("")
 	flag.PrintDefaults()
 	fmt.Println("")
-	fmt.Println("EXAMPLE:  ./ListEC2 -R us-east-2 -I i-0123456789abcdef")
+	fmt.Println("EXAMPLE:  ./ListENIs -R us-east-2 -I 1.2.3.4")
+	fmt.Println("   NOTE:  Do not specify the -E and -I options together.")
 	fmt.Println("")
 	os.Exit(255)
 }
@@ -139,20 +140,27 @@ func GetSGPorts(direction string, sgid string) {
 
 func main() {
 	//  Get command line parms
-	RegionPtr := flag.String("R", "", "(required) - AWS Region that you want to view EC2 Instances in")
-	InstanceIdPtr := flag.String("I", "", "(optional) - The specific EC2 Instance ID that you want to view information about")
+	RegionPtr := flag.String("R", "", "(required) - AWS Region that you want to view ENI's in")
+	IpAddrPtr := flag.String("I", "", "(optional) - The IP Address associated with the specific ENI that you want to view")
+	ENIIdPtr := flag.String("E", "", "(optional) - The ENI ID associated with the specific ENI that you want to view")
+
 	flag.Parse()
 
 	// Check that required parms are set
 	if *RegionPtr == "" {
 		usage()
+	} else if *IpAddrPtr != "" && *ENIIdPtr != "" {
+		usage()
 	}
+
+	fmt.Println("THIS WORKS!!!")
+	os.Exit(0)
 
 	//  Setup a session to interract with AWS
 	ec2svc = ec2.New(DefineSession(*RegionPtr))
 
 	//  Get EC2 instance information
-	InstanceList, err := ec2svc.DescribeInstances(BuildEC2Parms(*InstanceIdPtr))
+	InstanceList, err := ec2svc.DescribeInstances(BuildEC2Parms(*IpAddrPtr))
 	if err != nil {
 		fmt.Println("there was an error listing instances: ", err.Error())
 		fmt.Errorf(err.Error())
