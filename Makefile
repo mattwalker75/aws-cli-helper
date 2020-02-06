@@ -40,9 +40,11 @@ go-build:
 	@echo "  >  Building binaries..."
 	@GOPATH=$(GOPATH) GOBIN=$(GOBIN) go build $(LDFLAGS) -o $(GOBIN)/ListEC2 ListEC2.go
 	@GOPATH=$(GOPATH) GOBIN=$(GOBIN) go build $(LDFLAGS) -o $(GOBIN)/ListENIs ListENIs.go
+	@GOPATH=$(GOPATH) GOBIN=$(GOBIN) go build $(LDFLAGS) -o $(GOBIN)/VPCFlowLogData VPCFlowLogData.go
 	@echo " Files:"
 	@echo "   - $(GOBIN)/ListEC2"
 	@echo "   - $(GOBIN)/ListENIs"
+	@echo "   - $(GOBIN)/VPCFLowLogData"
 	@echo ""
 
 go-get:
