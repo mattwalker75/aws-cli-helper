@@ -2,12 +2,25 @@
 
 View your AWS infrastructure setup in a user friendly format from the CLI
 
+### Requirements
+
+Make sure you have the following tools downloaded and installed on your computer:
+
+* GoLang ( https://golang.org/dl/ )
+* make ( Or your favorite flavor of make )
+
 ### Installation
 
-Here are the install notes....   Will fill this out after I have a tool written
+Run the following command to download all the required dependencies and compile the programs for use:
 
 ```
-Some install steps....
+make install
+```
+
+There are a number of other options you can select from.  Run the following command to view those options:
+
+```
+make help
 ```
 
 ### Usage
