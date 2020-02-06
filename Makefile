@@ -16,7 +16,9 @@ MAKEFLAGS += --silent
 ## reset: Delete all directories and files not part of the repo.  Perform a reset on the repo for commits
 reset:
 	@-$(MAKE) go-clean
+	@echo "  >  Deleting the bin directory..."
 	@-rm -Rf $(GOBIN)
+	@echo "  >  Deleting the vendor directory..."
 	@-rm -Rf $(GOBASE)/vendor
 
 ## clean: Cleans up build files.
@@ -27,13 +29,13 @@ clean:
 ## dep_install: Install missing dependencies needed by your programs. 
 dep_install: go-get
 
-## compile: Runs "dep_install" and then compiles the programs and put them in the bin directory
-compile: go-compile
+## install: Runs "dep_install" and then compiles the programs and put them in the bin directory
+install: go-compile
 
 go-compile: go-get go-build
 
 go-build:
-	@echo "  >  Building binary..."
+	@echo "  >  Building binaries..."
 	@GOPATH=$(GOPATH) GOBIN=$(GOBIN) go build $(LDFLAGS) -o $(GOBIN)/ListEC2 ListEC2.go
 	@echo " Files:"
 	@echo "   - $(GOBIN)/ListEC2"

@@ -16,6 +16,7 @@ Run the following command to download all the required dependencies and compile 
 ```
 make install
 ```
+All compiled programs will be located in the `bin` directory.
 
 There are a number of other options you can select from.  Run the following command to view those options:
 
