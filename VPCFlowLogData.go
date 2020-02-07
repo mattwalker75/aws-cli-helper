@@ -4,6 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strings"
+	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -73,7 +75,7 @@ func main() {
 	//  Get command line parms
 	RegionPtr := flag.String("R", "", "(required) - AWS Region that you want to view ENI's in")
 	VPCidPtr := flag.String("V", "", "(optional) - The VPC ID that is associated with the VPC Flow Log that you want to view")
-	//ENIIdPtr := flag.String("E", "", "(optional) - The ENI ID associated with the ENI that you specifically want to view the VPC Flow Log of")
+	ENIIdPtr := flag.String("E", "", "(optional) - The ENI ID associated with the ENI that you specifically want to view the VPC Flow Log of")
 
 	flag.Parse()
 
@@ -133,20 +135,27 @@ func main() {
 		os.Exit(0)
 	}
 
-	fmt.Println(*FlowLog_List.FlowLogs[0].LogGroupName)
-
 	//  Get the Logstreams ( eni-XXXXXXX ) associated with the VPC Flow Log ( Log Group )
-	LogStreamList, err := cwlsvc.DescribeLogStreams(&cloudwatchlogs.DescribeLogStreamsInput{
-		LogGroupName: aws.String(*FlowLog_List.FlowLogs[0].LogGroupName),
-	})
+	var LogStreamList *cloudwatchlogs.DescribeLogStreamsOutput
+	if *ENIIdPtr == "" {
+		LogStreamList, err = cwlsvc.DescribeLogStreams(&cloudwatchlogs.DescribeLogStreamsInput{
+			LogGroupName: aws.String(*FlowLog_List.FlowLogs[0].LogGroupName),
+		})
+	} else {
+		LogStreamList, err = cwlsvc.DescribeLogStreams(&cloudwatchlogs.DescribeLogStreamsInput{
+			LogGroupName:        aws.String(*FlowLog_List.FlowLogs[0].LogGroupName),
+			LogStreamNamePrefix: aws.String(*ENIIdPtr),
+		})
+	}
+
 	if err != nil {
 		fmt.Println("Got error getting log streams:")
 		fmt.Println(err.Error())
 		os.Exit(1)
 	}
 
+	//  Process the CloudWatch Log Steams ( log files ) one at a time
 	for _, LogStream := range LogStreamList.LogStreams {
-		fmt.Println(*LogStream.LogStreamName)
 		LScontent, err := cwlsvc.GetLogEvents(&cloudwatchlogs.GetLogEventsInput{
 			LogGroupName:  aws.String(*FlowLog_List.FlowLogs[0].LogGroupName),
 			LogStreamName: aws.String(*LogStream.LogStreamName),
@@ -155,9 +164,53 @@ func main() {
 			fmt.Println("Got error getting log stream content:")
 			fmt.Println(err.Error())
 		}
-		for _, LSline := range LScontent.Events {
-			fmt.Printf("Time (%d): %s\n", *LSline.Timestamp, *LSline.Message)
+
+		//  Process the content of the log file one line at a time
+		OldForwardToken := "NOTVALID"
+		for {
+			//  Check if current token matches old token, if so then there is no additional data so we can break out of loop
+			if *LScontent.NextForwardToken == OldForwardToken {
+				break
+			}
+
+			//  Process each line of the log
+			for _, LSline := range LScontent.Events {
+				//  Log Steam name:  <ENI ID>-all
+				RawLSline := strings.Fields(*LSline.Message)
+				if RawLSline[13] != "NODATA" {
+					t := time.Unix((*LSline.Timestamp / 1000), 0)
+					timezone, _ := t.Zone()
+					eventtime := fmt.Sprintf("%d-%02d-%02d %02d:%02d:%02d %s", t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second(), timezone)
+					var my_protocol string
+					if RawLSline[7] == "6" {
+						my_protocol = "tcp"
+					} else if RawLSline[7] == "17" {
+						my_protocol = "udp"
+					} else {
+						my_protocol = RawLSline[7]
+					}
+					formatline := RawLSline[2] + " : " + RawLSline[3] + "[" + RawLSline[5] + "] --> " + RawLSline[4] + "[" + RawLSline[6] + "] : " + my_protocol + " : " + RawLSline[12] + " " + RawLSline[13]
+					if RawLSline[12] == "ACCEPT" && RawLSline[13] == "OK" {
+						fmt.Printf(" %s : %s\n", eventtime, formatline)
+					} else {
+						fmt.Printf(" %s : %s  <-\n", eventtime, formatline)
+					}
+				}
+			}
+
+			//  Check if there is a token for additional data, of so then make the request with the token to get the additional data
+			if LScontent.NextForwardToken != nil {
+				OldForwardToken = *LScontent.NextForwardToken
+				LScontent, err = cwlsvc.GetLogEvents(&cloudwatchlogs.GetLogEventsInput{
+					LogGroupName:  aws.String(*FlowLog_List.FlowLogs[0].LogGroupName),
+					LogStreamName: aws.String(*LogStream.LogStreamName),
+					NextToken:     aws.String(*LScontent.NextForwardToken),
+				})
+				if err != nil {
+					fmt.Println("Got error getting log stream content:")
+					fmt.Println(err.Error())
+				}
+			}
 		}
-		fmt.Println(*LScontent.NextForwardToken)
 	}
 }

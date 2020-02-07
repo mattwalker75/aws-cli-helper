@@ -46,6 +46,20 @@ Run the following command to get a list of commandline arguments:
 ./ListENIs
 ```
 
+#### VPCFlowLogData
+This is used to view the VPC Flow Log data associated with your AWS VPC.  It takes the current VPC Flow Log 
+data and reformats it into an easy to read format consisting of the following:
+
+```
+<date> : <ENI ID> : <Source IP>[<source port>] --> <destination IP>[<destination port>] : <protocol> : <status>
+```
+
+Run the following command to get a list of commandline arguments:
+
+```
+./VPCFlowLogData
+```
+
 ### Want to contribute?
 
 After you added your code updates, compiling it, and testing it, you can run the following command
