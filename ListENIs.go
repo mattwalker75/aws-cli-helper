@@ -25,14 +25,20 @@ func usage() {
 	os.Exit(255)
 }
 
+//  Check error codes
+func CheckError(returncode error, message string, exit_status int) {
+	if returncode != nil {
+		fmt.Printf("%s: %s", message, returncode.Error())
+		fmt.Errorf(returncode.Error())
+		os.Exit(exit_status)
+	}
+}
+
 //  Sets the region and grabs local credentials so you can access the AWS environment
 func DefineSession(region string) *session.Session {
 	sess, err := session.NewSession(&aws.Config{Region: aws.String(region)})
-	if err != nil {
-		fmt.Println("there was an error authenticating with AWS", err.Error())
-		fmt.Errorf(err.Error())
-		os.Exit(1)
-	}
+	CheckError(err, "there was an error authenticating with AWS", 1)
+
 	return sess
 }
 
@@ -86,11 +92,7 @@ func main() {
 
 	//  Get ENI information
 	ENIList, err := ec2svc.DescribeNetworkInterfaces(BuildENIParms(*IpAddrPtr, *ENIIdPtr))
-	if err != nil {
-		fmt.Println("there was an error listing instances: ", err.Error())
-		fmt.Errorf(err.Error())
-		os.Exit(1)
-	}
+	CheckError(err, "there was an error listing instances", 1)
 
 	for _, eni := range ENIList.NetworkInterfaces {
 		fmt.Printf("%s: %s [%s]\n", *eni.NetworkInterfaceId, *eni.PrivateDnsName, *eni.PrivateIpAddress)
