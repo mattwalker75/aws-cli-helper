@@ -46,6 +46,35 @@ GOPATH=$(pwd) go build VPCFlowLogData.go
 
 ```
 
+#### For Cross Platform compiling
+
+Here you will see some examples of how to compile for a different OS and CPU architecture, such as compiling a Windows binary
+from a Linux system.
+
+Run the following command to download required packages:
+
+```
+GOPATH=$(pwd) go get -d
+```
+
+Run the following command to compile the binary for a Mac:
+
+```
+GOPATH=$(pwd) GOOS=darwin GOARCH=amd64 go build ListENIs.go
+```
+
+Run the following comand to compile the binary for Linux:
+
+```
+GOPATH=$(pwd) GOOS=linux GOARCH=amd64 go build ListENIs.go
+```
+
+Run the following command to compile the binary for Windows:
+
+```
+GOPATH=$(pwd) GOOS=windows GOARCH=amd64 go build ListENIs.g
+```
+
 ### Usage
 
 #### ListEC2
