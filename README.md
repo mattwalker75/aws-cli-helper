@@ -8,6 +8,7 @@ Make sure you have the following tools downloaded and installed on your computer
 
 * GoLang ( https://golang.org/dl/ )
 * make ( Or your favorite flavor of make )
+   * NOTE:  The make program is only needed for non-Windows users.  Windows users will have to perform manual code builds.
 
 ### Installation
 
