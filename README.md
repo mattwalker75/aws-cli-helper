@@ -11,7 +11,9 @@ Make sure you have the following tools downloaded and installed on your computer
 
 ### Installation
 
-Run the following command to download all the required dependencies and compile the programs for use:
+#### For Mac and Linux Users
+
+For Mac and Linux users, run the following command to download all the required dependencies and compile the programs for use:
 
 ```
 make install
@@ -22,6 +24,26 @@ There are a number of other options you can select from.  Run the following comm
 
 ```
 make help
+```
+
+#### For Windows Users
+
+For Windows users, run the following set of commands to compile the GoLang programs.  You will need to be in the root directory
+that contains the content of this Repo.
+
+Run the following command to download required packages:
+
+```
+GOPATH=$(pwd) go get -d
+```
+
+Run the following set of commands to build the binary files:
+
+```
+GOPATH=$(pwd) go build ListEC2.go
+GOPATH=$(pwd) go build ListENIs.go
+GOPATH=$(pwd) go build VPCFlowLogData.go
+
 ```
 
 ### Usage
